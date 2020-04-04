@@ -1,0 +1,122 @@
+
+body {
+    background-color: #e9ecef;
+}
+
+.container {
+    padding: 3rem 1rem 0 1rem;
+}
+
+.table {
+    border-radius: 0.5rem;
+    min-height: 50vh;
+    background-color: rgb(80, 129, 46);
+}
+
+@import url(https://fonts.googleapis.com/css?family=Lora:400,700);
+$base: 30px;
+
+h1 {
+    margin: 0;
+    padding: 0;
+}
+
+card {
+    font-family: Lora, serif;
+    font-weight: 700;
+    float: left;
+    margin: 0 10px 10px 0;
+    width: $base * 3;
+    height: $base * 4;
+    border-radius: $base * 0.1;
+    font-size: $base * 0.325;
+    box-shadow: 2px 2px 6px rgba(black, 0.2),
+      inset 0 0 0 1px rgba(black, 0.2);
+    position: relative;
+    perspective: 500px;
+
+    transition: transform 1s;
+    transform-style: preserve-3d;
+
+    &:not(.face-up) {
+        transform: rotateY( 180deg ) ;
+        transition: transform 0.5s;
+    }
+
+    front {
+        background: linear-gradient(to left, white, #f0f0f0);
+    }
+
+    back {
+        background: crimson;
+        transform: rotateY( 180deg );
+        background-size: cover;
+    }
+
+    front,
+    back {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        text-align: center;
+        border-radius: $base * 0.1;
+        backface-visibility: hidden;
+    }
+
+    &.black {
+        color: #000;
+    }
+
+    &.red {
+        color: crimson;
+    }
+
+    corner {
+        position: absolute;
+        text-align: center;
+        &.top { top: 10px; }
+        &.left { left: 10px; }
+        &.bottom { bottom: 10px; }
+        &.right { right: 10px; }
+        h1 {
+            font-size: 1.5em;
+        }
+        pip {
+            font-size: 1.3em;
+        }
+        &:last-of-type {
+            transform: rotate(180deg);
+        }
+    }
+
+    pip {
+        font-family: serif;
+        &.clubs:before { content: '\02663'; }
+        &.hearts:before { content: '\02665'; }
+        &.spades:before { content: '\02660'; }
+        &.diamonds:before { content: '\02666'; }
+    }
+
+    pips {
+        pip {
+          position: absolute;
+          transform: translate(-50%, -50%);
+          font-size: 2.3em;
+          &.flip {
+            transform: translate(-50%, -50%) rotate(180deg);
+          }
+        }
+        h1 {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 4em;
+          border-width: 1px;
+          border-style: solid;
+          text-align: center;
+          line-height: $base * 2.5;
+          width: $base * 1.5;
+        }
+    }
+}
