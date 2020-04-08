@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject, ReplaySubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 
 export interface WSEvent<T> {
     type: string,
@@ -9,9 +9,7 @@ function isMessageEvent(ev: Event): ev is MessageEvent {
     return ev.type === 'message' && ev instanceof MessageEvent && 'data' in ev;
 }
 
-export type WebSocketEventType = "message" | "close" | "open";
-
-export class Server<T> implements WebSocket {
+export class WebSocketHelper<T> implements WebSocket {
     get binaryType(): BinaryType {
         return this.ws.binaryType;
     }
@@ -47,12 +45,16 @@ export class Server<T> implements WebSocket {
 
     private ws: WebSocket;
 
-    constructor(url: string) {
-        this.ws = new WebSocket(url);
-        this.ws.onerror = this.onerror;
-        this.ws.onclose = this.onclose;
-        this.ws.onmessage = this.onmessage;
-        this.ws.onopen = this.onopen;
+    constructor(url: string | WebSocket) {
+        if (typeof url === 'string') {
+            this.ws = new WebSocket(url);
+            this.ws.onerror = this.onerror;
+            this.ws.onclose = this.onclose;
+            this.ws.onmessage = this.onmessage;
+            this.ws.onopen = this.onopen;
+        } else {
+            this.ws = url;
+        }
     }
 
     close(code?: number, reason?: string): void {
@@ -102,16 +104,3 @@ export class Server<T> implements WebSocket {
         return { type: ev.type, data };
     }
 }
-
-import { wsUri } from '../constants/server.constants';
-import { tap } from 'rxjs/operators';
-
-function init(): void {
-    const server = new Server(wsUri);
-
-    server.connection$.pipe(
-        tap(ev => ev.type === 'open' ? server.send('hi') : null),
-    ).subscribe((v) => console.log(v));
-}
-
-window.addEventListener('load', init);

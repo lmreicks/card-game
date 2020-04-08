@@ -25,30 +25,27 @@ var CardValue;
 })(CardValue || (CardValue = {}));
 
 var Card = function () {
-    function Card(suit, value, position, faceUp) {
+    function Card(suit, value, position, rotate, faceUp) {
         _classCallCheck(this, Card);
 
-        this.faceUp = true;
         this.value = value;
         this.suit = suit;
         this.position = position || { x: 0, y: 0 };
         this.faceUp = faceUp || true;
         this.corners = ['top left', 'bottom right'];
-        this.pips = this.getPips();
-        this.displayValue = this.getDisplayValue();
     }
 
     _createClass(Card, [{
+        key: "updateCard",
+        value: function updateCard(update) {
+            for (var prop in update) {
+                this[prop] = update[prop];
+            }
+        }
+    }, {
         key: "toggleFaceUp",
         value: function toggleFaceUp() {
             this.faceUp = !this.faceUp;
-            if (this.el) {
-                if (this.faceUp) {
-                    this.el.classList.add('face-up');
-                } else {
-                    this.el.classList.remove('face-up');
-                }
-            }
         }
     }, {
         key: "createElement",
@@ -57,10 +54,10 @@ var Card = function () {
                 return this.el;
             }
             var card = document.createElement('card');
-            var front = this.createFront();
-            var back = this.createBack();
-            card.appendChild(front);
-            card.appendChild(back);
+            this.front = this.createFront();
+            this.back = this.createBack();
+            card.appendChild(this.front);
+            card.appendChild(this.back);
             if (this.faceUp) {
                 card.classList.add('face-up');
             }
@@ -206,6 +203,39 @@ var Card = function () {
                     return [{ left: '50%', top: '35%' }, { left: '50%', top: '65%', flip: true }, { left: '33%', top: '20%' }, { left: '33%', top: '40%' }, { left: '33%', top: '60%', flip: true }, { left: '33%', top: '80%', flip: true }, { left: '67%', top: '20%' }, { left: '67%', top: '40%' }, { left: '67%', top: '60%', flip: true }, { left: '67%', top: '80%', flip: true }];
                 default:
                     return [];
+            }
+        }
+    }, {
+        key: "value",
+        get: function get() {
+            return this._value;
+        },
+        set: function set(v) {
+            this._value = v;
+            this.displayValue = this.getDisplayValue();
+            this.pips = this.getPips();
+        }
+    }, {
+        key: "suit",
+        get: function get() {
+            return this._suit;
+        },
+        set: function set(suit) {
+            this._suit = suit;
+        }
+    }, {
+        key: "faceUp",
+        get: function get() {
+            return this._faceUp;
+        },
+        set: function set(faceUp) {
+            this._faceUp = faceUp;
+            if (this.el) {
+                if (faceUp) {
+                    this.el.classList.add('face-up');
+                } else {
+                    this.el.classList.remove('face-up');
+                }
             }
         }
     }]);
@@ -394,7 +424,9 @@ function init() {
     var server = new Server(server_constants_1.wsUri);
     server.connection$.pipe(operators_1.tap(function (ev) {
         return ev.type === 'open' ? server.send('hi') : null;
-    })).subscribe(console.log);
+    })).subscribe(function (v) {
+        return console.log(v);
+    });
 }
 window.addEventListener('load', init);
 

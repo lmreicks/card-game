@@ -10,25 +10,23 @@ class App {
         this._express = express();
         this.middleware();
         this.routes();
-        const wss = new WebSocket.Server({ server: this._express });
-        const server = http.createServer(App);
+        const server = http.createServer(this._express);
+        const wss = new WebSocket.Server({ server });
         // start our server
-        server.listen(process.env.PORT || 8999, () => {
-            console.log(`Server started on port ${server.address().port} :)`);
-        });
-        wss.on('connection', (ws) => {
-            //connection is up, let's add a simple simple event
-            ws.on('message', (message) => {
-                //log the received message and send it back to the client
-                console.log('received: %s', message);
-                ws.send(`Hello, you sent -> ${message}`);
-            });
-            //send immediatly a feedback to the incoming connection    
-            ws.send('Hi there, I am a WebSocket server');
+        server.listen(process.env.PORT || 8999);
+        wss.on('connection', (socket) => {
+            this.startWebSocket(socket);
         });
     }
     get express() {
         return this._express;
+    }
+    startWebSocket(ws) {
+        ws.on('message', (message) => {
+            //log the received message and send it back to the client
+            console.log('received: %s', message);
+            ws.send(`Hello, you sent -> ${message}`);
+        });
     }
     // Configure Express middleware.
     middleware() {
@@ -44,12 +42,6 @@ class App {
         router.get('/api', (req, res, next) => {
             console.log(req);
         });
-        // router.get('/', (req, res, next) => {
-        //     res.sendFile(path.join(__dirname, 'index.html'))
-        // });
-        // this._express.use('/', router);
-        // this._express.use(express.static('css'));
-        // this._express.use(express.static('assets'));
     }
 }
-exports.default = new App().express;
+exports.default = App;

@@ -1,6 +1,10 @@
-import { Table } from "./table";
+
 import { Move } from "./move";
 
 export interface Rules {
-    evaluateMove(move: Move);
+    /**
+     * Should return either the new state or a bool
+     * @param move 
+     */
+    evaluateMove(move: Move): boolean;
 }

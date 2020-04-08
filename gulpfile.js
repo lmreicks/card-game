@@ -2,7 +2,6 @@ const gulp = require('gulp');
 const server = require('./server/gulpfile');
 const client = require('./app/gulpfile');
 const del = require('del');
-const browserSync = require('browser-sync').create();
 
 const clean = () => del(['dist']);
 

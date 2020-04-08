@@ -25,22 +25,15 @@ function scripts() {
 
 function server(cb) {
     let started = false;
-    browserSync.init({
-      port: 3002, //this can be any port, it will show our app
-      proxy: 'http://localhost:8999', //this is the port where express server works
-      ui: { port: 3003 }, // UI, can be any port
-      reloadDelay: 1000 //Important, otherwise syncing will not work
-    });
     return nodemon({
         script: paths.outDir + '/' + paths.scripts.out,
-        ext: 'js html css'
+        ext: 'js'
     }).on('start', () => {
       if (!started) {
         cb();
         started = true;
       }
-    })
-    .on('reload', browserSync.reload())
+    });
 }
 
 function watch(done) {

@@ -6,8 +6,16 @@ export enum Suit {
     Clubs
 }
 
-export interface Card {
-    suit: Suit;
+export interface Position {
+    x: number;
+    y: number;
+}
+
+export interface Card<T = any> {
+    id: number;
+    type: T;
     value: number;
     faceUp: boolean;
+    position: Position;
+    rotate?: number;
 }

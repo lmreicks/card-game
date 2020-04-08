@@ -24,35 +24,66 @@ interface Pip {
 }
 
 export class Card implements ICard {
-    value: number;
-    suit: Suit;
+    private _value: number;
+
+    get value(): number {
+        return this._value;
+    }
+    set value(v: number) {
+        this._value = v;
+        this.displayValue = this.getDisplayValue();
+        this.pips = this.getPips();
+    }
+
+    private _suit: Suit;
+    get suit(): Suit {
+        return this._suit;
+    }
+    set suit(suit: Suit) {
+        this._suit = suit;
+    }
     position: Position;
-    faceUp: boolean = true;
+    rotate: number;
+
+    private _faceUp: boolean;
+    get faceUp(): boolean {
+        return this._faceUp;
+    }
+    set faceUp(faceUp: boolean) {
+        this._faceUp = faceUp;
+        if (this.el) {
+            if (faceUp) {
+                this.el.classList.add('face-up');
+            } else {
+                this.el.classList.remove('face-up');
+            }
+        }
+    }
     corners: string[];
     pips: Pip[];
     displayValue: string;
 
     el: HTMLElement;
 
-    constructor(suit: Suit, value: number, position?: Position, faceUp?: boolean) {
+    private front: HTMLElement;
+    private back: HTMLElement;
+
+    constructor(suit: Suit, value: number, position?: Position, rotate?: number, faceUp?: boolean) {
         this.value = value;
         this.suit = suit;
         this.position = position || { x: 0, y: 0 };
         this.faceUp = faceUp || true;
         this.corners = [ 'top left', 'bottom right'];
-        this.pips = this.getPips();
-        this.displayValue = this.getDisplayValue();
+    }
+
+    updateCard(update: ICard) {
+        for (let prop in update) {
+            this[prop] = update[prop];
+        }
     }
 
     toggleFaceUp(): void {
         this.faceUp = !this.faceUp;
-        if (this.el) {
-            if (this.faceUp) {
-                this.el.classList.add('face-up');
-            } else {
-                this.el.classList.remove('face-up');
-            }
-        }
     }
 
     createElement(): HTMLElement {
@@ -61,11 +92,11 @@ export class Card implements ICard {
         }
         const card = document.createElement('card');
 
-        const front = this.createFront();
-        const back = this.createBack();
+        this.front = this.createFront();
+        this.back = this.createBack();
 
-        card.appendChild(front);
-        card.appendChild(back);
+        card.appendChild(this.front);
+        card.appendChild(this.back);
 
         if (this.faceUp) {
             card.classList.add('face-up');

@@ -1,10 +1,10 @@
-import { Application, Express } from 'express';
+import { Express } from 'express';
 import * as express from 'express';
 import * as path from 'path';
 import * as serveStatic from 'serve-static';
-import { AddressInfo } from 'ws';
 import * as WebSocket from 'ws';
 import * as http from 'http';
+import { Uno } from './uno/uno';
 
 class App {
     private _express: Express;
@@ -24,7 +24,16 @@ class App {
         // start our server
         server.listen(process.env.PORT || 8999);
 
-        wss.on('connection', this.startWebSocket);
+        wss.on('connection', (socket) => {
+            this.startWebSocket(socket);
+            // create a player
+            const player = {
+                socket,
+                score: 0,
+                hand: []
+            };
+            const game = new Uno([player]);
+        });
     }
 
     private startWebSocket(ws): void {
@@ -51,12 +60,6 @@ class App {
         router.get('/api', (req, res, next) => {
             console.log(req);
         });
-        // router.get('/', (req, res, next) => {
-        //     res.sendFile(path.join(__dirname, 'index.html'))
-        // });
-        // this._express.use('/', router);
-        // this._express.use(express.static('css'));
-        // this._express.use(express.static('assets'));
     }
 }
 
